@@ -1,0 +1,38 @@
+AI X-Ray Analyzer — Project Overview
+
+What is this?
+-------------
+A multi-tenant SaaS platform where hospitals register, onboard doctors,
+and use AI to analyze chest X-ray images. Each hospital gets its own
+isolated database — no data leaks between institutions.
+
+Who uses it?
+------------
+- Hospital Admins: register their hospital, manage doctors, view usage
+- Doctors: manage patients, upload X-rays, trigger AI analysis
+- Super Admins: oversee all hospitals and users platform-wide
+
+Core Features
+-------------
+1. Multi-tenant isolation (database-per-hospital)
+2. JWT auth + WebAuthn passkey (biometric) login
+3. OTP email verification on registration
+4. Patient management (CRUD)
+5. X-ray scan upload + AI analysis with Grad-CAM
+6. Role-based access control (doctor / admin / superadmin)
+7. Usage tracking and plan limits
+8. Invite-code system for doctor onboarding
+
+Tech Stack
+----------
+Backend:  FastAPI + MongoDB (Motor) + Redis + Docker
+Frontend: React 19 + Vite + Tailwind CSS + Framer Motion
+Auth:     JWT + bcrypt + WebAuthn (FIDO2) + OTP via email
+
+How to Run
+----------
+1. Clone the repo
+2. cd backend && docker compose up --build
+3. cd frontend && npm install && npm run dev
+4. API: http://localhost:8000/docs
+5. Frontend: http://localhost:5173

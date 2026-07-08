@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand & Accent */
+  --color-primary: #e60023;
+  --color-primary-pressed: #cc001f;
+  --color-on-primary: #ffffff;
+  
+  /* Text */
+  --color-ink: #000000;
+  --color-ink-soft: #211922;
+  --color-body: #33332e;
+  --color-charcoal: #262622;
+  --color-mute: #62625b;
+  --color-ash: #91918c;
+  --color-stone: #c8c8c1;
+  --color-on-dark: #ffffff;
+  --color-on-dark-mute: rgba(255, 255, 255, 0.7);
+
+  /* Surface */
+  --color-canvas: #ffffff;
+  --color-surface-soft: #fbfbf9;
+  --color-surface-card: #f6f6f3;
+  --color-surface-dark: #262622;
+  --color-surface-elevated: #ffffff;
+  --color-secondary-bg: #e5e5e0;
+  --color-secondary-pressed: #c8c8c1;
+  --color-hairline: #dadad3;
+  --color-hairline-soft: #e5e5e0;
+
+  /* Semantic & Editorial Accents */
+  --color-error: #9e0a0a;
+  --color-error-deep: #cc001f;
+  --color-success: #103c25;
+  --color-success-pale: #c7f0da;
+  --color-focus: #435ee5;
+  --color-focus-inner: #ffffff;
+  --color-accent-pressed-blue: #617bff;
+  --color-accent-purple: #7e238b;
+  --color-accent-purple-deep: #6845ab;
+
+  /* Overwrite Default Radii to Pinterest standard */
+  --radius-md: 16px;
+  --radius-lg: 32px;
+  --radius-full: 9999px;
+}
+
+/*
+ * Design System — Pinterest-inspired warm cream palette
+ * Font: Inter (Pin Sans substitute)
+ * Accent: #e60023 (Pinterest Red) — reserved for primary CTAs only
+ * Radii: 16px (md), 32px (lg), 9999px (full/pill)
+ * Surface: warm cream tones, no shadows on cards
+ */
+
+:root {
+  /* Brand */
+  --primary: #e60023;
+  --primary-pressed: #cc001f;
+  --on-primary: #ffffff;
+
+  /* Text */
+  --ink: #000000;
+  --ink-soft: #211922;
+  --body: #33332e;
+  --charcoal: #262622;
+  --mute: #62625b;
+  --ash: #91918c;
+  --stone: #c8c8c1;
+  --on-dark: #ffffff;
+  --on-dark-mute: rgba(255, 255, 255, 0.7);
+
+  /* Surface */
+  --canvas: #ffffff;
+  --surface-soft: #fbfbf9;
+  --surface-card: #f6f6f3;
+  --surface-dark: #262622;
+  --surface-elevated: #ffffff;
+  --secondary-bg: #e5e5e0;
+  --secondary-pressed: #c8c8c1;
+  --hairline: #dadad3;
+  --hairline-soft: #e5e5e0;
+
+  /* Semantic */
+  --error: #9e0a0a;
+  --error-deep: #cc001f;
+  --success: #103c25;
+  --success-pale: #c7f0da;
+  --focus: #435ee5;
+  --focus-inner: #ffffff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, system-ui, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--surface-soft);
+  color: var(--body);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Prevent horizontal overflow on mobile */
+#root {
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--secondary-bg); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--secondary-pressed); }
+
+/* Focus ring — double ring like Pinterest */
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* Typography Scale Utility Classes */
+.typography-display-xl {
+  font-family: 'Inter', sans-serif;
+  font-size: 70px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -1.2px;
+}
+
+.typography-display-lg {
+  font-family: 'Inter', sans-serif;
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.8px;
+}
+
+.typography-heading-xl {
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -1.2px;
+}
+
+.typography-heading-lg {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.typography-heading-md {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.typography-body-md {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.typography-body-strong {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.typography-body-sm {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.typography-body-sm-strong {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.typography-caption-md {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+.typography-caption-sm {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.typography-button-md {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.typography-button-sm {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

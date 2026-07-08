@@ -1,0 +1,58 @@
+X-Ray Analyzer - Backend Architecture
+
+1. Tech Stack
+-------------
+- FastAPI + Motor (async MongoDB driver) + Redis
+- JWT auth + WebAuthn passkeys + OTP email verification
+- Docker Compose for local development
+
+2. Multi-Tenancy (Database-per-Tenant)
+--------------------------------------
+Simple and clean:
+
+    ai_xray_master (public)     → users, hospitals, audit_logs
+    tenant_<hospital_id>        → patients, scans
+
+Each hospital gets its own Mongo database. Full isolation.
+
+How it works per request:
+    1. User logs in → JWT contains hospital_id
+    2. Route calls get_tenant_db → returns client["tenant_<hospital_id>"]
+    3. Route uses tenant_db.patients / tenant_db.scans normally
+
+3. Folder Structure
+-------------------
+backend/
+├── core/               ← Infrastructure (DB, auth, middleware)
+│   ├── database.py     ← Mongo connection + tenant DB helper
+│   ├── dependencies.py ← FastAPI dependencies (auth, tenant resolution)
+│   ├── events.py       ← Startup/shutdown lifecycle
+│   ├── exceptions.py   ← Custom HTTP exceptions
+│   ├── security.py     ← JWT + password hashing
+│   ├── redis_client.py ← OTP, challenges, rate-limit
+│   ├── settings.py     ← Environment config
+│   └── middleware/     ← Audit log, rate limiting
+├── routes/             ← API endpoints (one folder per domain)
+│   ├── auth/           ← Register, login, OTP, refresh
+│   ├── patient/        ← CRUD patients (tenant-scoped)
+│   ├── scan/           ← CRUD scans (tenant-scoped)
+│   ├── ai/             ← AI analysis trigger
+│   ├── rag/            ← RAG query pipeline
+│   ├── tenants/        ← Hospital management (superadmin)
+│   ├── user/           ← User management
+│   ├── billing/        ← Usage stats
+│   ├── admin/          ← Dashboard
+│   └── passkey/        ← WebAuthn flows
+├── services/           ← Shared services (email)
+├── templates/          ← Email templates
+├── scripts/            ← CLI tools (create_superadmin)
+├── main.py             ← App factory
+├── requirements.txt
+├── Dockerfile
+└── docker-compose.yml
+
+4. Running
+----------
+    docker compose up --build
+    # API at http://localhost:8000
+    # Docs at http://localhost:8000/docs

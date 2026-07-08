@@ -1,0 +1,88 @@
+AI X-Ray Analyzer — Multi-Tenancy Architecture
+
+Model: Database-per-Tenant + Subdomain Routing
+----------------------------------------------
+Each hospital gets:
+1. Its own separate MongoDB database (tenant_<hospital_id>)
+2. A unique subdomain: <slug>.BASE_DOMAIN (e.g. abc.domain.com)
+
+    ai_xray_master (public)     → users, hospitals, audit_logs
+    tenant_<hospital_id>        → patients, scans
+
+Subdomain Routing
+-----------------
+When a hospital registers, the system:
+1. Slugifies the hospital name → DNS-safe label (e.g. "St. Mary's" → "st-marys")
+2. Ensures uniqueness by appending a numeric suffix if needed
+3. Stores the subdomain in the hospitals collection
+4. Returns the tenant_url (e.g. http://st-marys.localhost:5173) in the API response
+
+The frontend redirects the user to their tenant subdomain after registration.
+
+How It Works (per request)
+--------------------------
+1. Request arrives at <slug>.BASE_DOMAIN
+2. TenantResolverMiddleware extracts subdomain from Host header
+   (or X-Tenant-Subdomain header for SPA dev)
+3. Looks up hospital by subdomain → sets request.state.tenant
+4. User logs in → JWT contains hospital_id claim
+5. get_tenant_db dependency resolves tenant database from JWT
+
+Key Files
+---------
+- core/settings.py              → BASE_DOMAIN, RESERVED_SUBDOMAINS, TENANT_URL_*
+- core/tenancy.py               → slugify, extract_subdomain, build_tenant_url
+- core/middleware/tenant_resolver.py → resolves Host → request.state.tenant
+- core/database.py              → get_tenant_database(hospital_id)
+- core/dependencies.py          → get_tenant_db (the FastAPI dependency)
+- routes/auth/service.py        → _generate_unique_subdomain on registration
+- routes/tenants/router.py      → GET /tenants/by-subdomain/{subdomain} (public)
+
+Provisioning
+------------
+When a hospital registers:
+1. Generate hospital_id (uuid4)
+2. Generate unique subdomain from hospital name
+3. Call setup_tenant_database(hospital_id):
+   - Creates "patients" collection with indexes
+   - Creates "scans" collection with indexes
+4. Insert hospital record (with subdomain) into public DB
+5. Create admin user linked to hospital_id
+6. Return tenant_url in API response
+
+Reserved Subdomains
+-------------------
+www, api, app, admin, dashboard, mail, smtp, ftp, blog, docs, help,
+support, status, assets, static, cdn, auth, login, signup, register,
+public, health
+
+These cannot be assigned to any tenant.
+
+Collections per Tenant Database
+-------------------------------
+patients:
+  - patient_id (unique index)
+  - name, age, gender, contact, medical_history
+  - created_by, created_at
+
+scans:
+  - scan_id (unique index)
+  - patient_id (index)
+  - scan_type, status, image_path, ai_result, notes
+  - created_by, created_at (index)
+
+Shared Collections (public DB)
+------------------------------
+users:
+  - email (unique index)
+  - password, role, hospital_id, is_verified
+  - credential_id, public_key (for passkeys)
+
+hospitals:
+  - hospital_id (unique index)
+  - subdomain (unique sparse index)
+  - name, invite_code, plan, max_users, max_scans_per_month, is_active
+
+audit_logs:
+  - timestamp, method, path, status_code, latency_ms
+  - user_email, tenant_id, client_ip

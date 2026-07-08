@@ -1,0 +1,71 @@
+AI X-Ray Analyzer — API Endpoints
+
+Base URL: http://localhost:8000/api/v1
+
+Authentication
+--------------
+POST /auth/register         Register hospital or doctor (returns OTP)
+POST /auth/verify-otp       Verify email OTP → returns tokens
+POST /auth/login            Password login → returns tokens
+POST /auth/refresh          Refresh access token
+POST /auth/logout           Logout (client-side token discard)
+POST /auth/forgot-password  Send magic link email
+GET  /auth/me               Get current user profile
+
+POST /auth/passkey/register/start   Start passkey registration
+POST /auth/passkey/register/verify  Complete passkey registration
+POST /auth/passkey/login/start      Start passkey login
+POST /auth/passkey/login/verify     Complete passkey login
+
+Patients (tenant-scoped, requires doctor/admin role)
+----------------------------------------------------
+POST   /patients/              Create patient
+GET    /patients/              List all patients
+GET    /patients/{patient_id}  Get single patient
+PATCH  /patients/{patient_id}  Update patient
+DELETE /patients/{patient_id}  Delete patient
+
+Scans (tenant-scoped, requires doctor/admin role)
+-------------------------------------------------
+POST   /scans/                    Create scan record
+GET    /scans/                    List scans (optional ?patient_id=)
+GET    /scans/{scan_id}           Get single scan
+POST   /scans/{scan_id}/upload    Upload X-ray image
+DELETE /scans/{scan_id}           Delete scan
+
+AI Analysis (tenant-scoped, requires doctor/admin role)
+-------------------------------------------------------
+POST /ai/analyze    Trigger AI analysis for a scan (by scan_id)
+
+RAG Pipeline (requires doctor role)
+------------------------------------
+POST /rag/query     Query medical knowledge base
+
+Tenant Management
+-----------------
+GET    /tenants/                         Superadmin: list all hospitals
+GET    /tenants/mine                     Get my hospital info
+GET    /tenants/by-subdomain/{subdomain} Public: lookup tenant by subdomain slug
+GET    /tenants/{hospital_id}            Superadmin: get hospital
+PATCH  /tenants/{hospital_id}            Superadmin: update hospital
+POST   /tenants/{hospital_id}/regenerate-invite  Admin: new invite code
+DELETE /tenants/{hospital_id}            Superadmin: deactivate hospital
+
+User Management
+---------------
+GET    /users/                  Superadmin: list all users
+GET    /users/roster            Admin: list doctors in my hospital
+DELETE /users/roster/{email}    Admin: remove doctor from hospital
+
+Billing
+-------
+GET /billing/usage    Admin: get usage stats (scans, users, plan)
+
+Admin Dashboard
+---------------
+GET /admin/stats      Superadmin: platform-wide statistics
+GET /admin/dashboard  Role-aware dashboard data
+
+Health
+------
+GET /health    Returns {"status": "ok", "version": "v1"}

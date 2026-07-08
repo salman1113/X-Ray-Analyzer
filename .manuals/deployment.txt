@@ -1,0 +1,69 @@
+AI X-Ray Analyzer — Deployment Guide
+
+Local Development
+-----------------
+Prerequisites: Docker, Docker Compose, Node.js 18+
+
+Backend:
+  cd backend
+  docker compose up --build
+  # API runs at http://localhost:8000
+  # Swagger docs at http://localhost:8000/docs
+  # MongoDB at localhost:27017
+  # Redis at localhost:6379
+
+Frontend:
+  cd frontend
+  npm install
+  npm run dev
+  # Runs at http://localhost:5173
+
+Environment Variables (backend/.env)
+------------------------------------
+DATABASE_URL=mongodb://root:example@mongodb:27017/
+DB_NAME=ai_xray_master
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=<your-email>
+SMTP_PASSWORD=<app-password>
+JWT_SECRET_KEY=<random-64-char-hex>
+REDIS_URL=redis://redis:6379/0
+
+Environment Variables (frontend/.env)
+-------------------------------------
+VITE_API_URL=http://localhost:8000/api/v1
+
+Docker Services
+---------------
+- api: FastAPI app (port 8000)
+- mongodb: MongoDB 7 (port 27017, data persisted in volume)
+- redis: Redis 7 (port 6379)
+
+Production Considerations
+-------------------------
+1. Change JWT_SECRET_KEY to a strong random value
+2. Use a managed MongoDB (Atlas) or replica set
+3. Use a managed Redis (ElastiCache, Upstash)
+4. Set up proper SMTP (SendGrid, SES, etc.)
+5. Add HTTPS via reverse proxy (nginx, Caddy, or cloud LB)
+6. Set ORIGIN in backend settings to your frontend domain
+7. Build frontend: npm run build → deploy dist/ to CDN/Vercel
+8. Consider adding:
+   - MongoDB connection pooling config (maxPoolSize)
+   - Health check endpoint monitoring
+   - Log aggregation (CloudWatch, Datadog)
+   - Backup strategy per tenant database
+
+Useful Commands
+---------------
+# Create a superadmin user:
+docker compose exec api python -m scripts.create_superadmin
+
+# Format backend code:
+docker compose exec api black .
+
+# Lint backend:
+docker compose exec api ruff check --fix .
+
+# Build frontend for production:
+cd frontend && npm run build

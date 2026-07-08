@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Docker
+.dockerignore
+
+# IDEs
+.vscode/
+.idea/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# Logs
+*.log
+
+# Cloud Storage (Hugging Face Hub)
+# Training data and model weights live in HF Hub — do NOT commit locally
+backend/data/
+backend/routes/ai/models/*.pth
+
+# Runtime uploads (user X-ray images and generated Grad-CAM heatmaps)
+backend/uploads/
+
+# Local environment variables
+backend/.env
+
+# Terraform
+terraform/.terraform/
+terraform/terraform.exe
+terraform/terraform.zip
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/*.tfvars
+
+

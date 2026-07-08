@@ -1,0 +1,50 @@
+services:
+  api:
+    build: .
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      # 1. Volume Mount for AI Models: Prevents rebuilding the container when weights change
+      - ./models:/app/models
+    env_file:
+      - .env
+    environment:
+      # 2. AI & Storage Explicit Environment Variables (Pulls from .env)
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET:-xray-analyzer-bucket}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # 3. DB connection explicitly linking to the mongo service container
+      - MONGO_URI=mongodb://root:example@mongodb:27017/ai_xray_master?authSource=admin
+    depends_on:
+      - mongodb
+      - redis
+    command: >
+      uvicorn main:app
+      --host 0.0.0.0
+      --port 8000
+      --reload
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: ai_xray_master
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:latest
+    container_name: redis_cache
+    ports:
+      - "6379:6379"
+
+volumes:
+  mongo_data:

@@ -1,0 +1,70 @@
+AI X-Ray Analyzer — Frontend Architecture
+
+Tech Stack
+----------
+- React 19 + Vite 8
+- Tailwind CSS 4 (via @tailwindcss/vite plugin)
+- React Router DOM 7 (client-side routing)
+- Framer Motion (animations)
+- Lucide React (icons)
+- React Hot Toast (notifications)
+- @simplewebauthn/browser (passkey/biometric auth)
+
+Design System
+-------------
+Pinterest-inspired warm cream palette:
+- Primary accent: #e60023 (red) — CTAs only
+- Surface: #fbfbf9 (page bg), #f6f6f3 (cards), #ffffff (nav/modals)
+- Text: #000000 (ink), #62625b (mute), #91918c (ash)
+- Radii: 16px (cards/buttons), 32px (modals), 9999px (pills)
+- Font: Inter (400/500/600/700)
+- No shadows on cards — flat with hairline borders
+
+Folder Structure
+----------------
+src/
+├── api/            ← Axios-based API client modules
+│   ├── client.js   ← Base axios instance with token interceptor
+│   ├── auth.js     ← Login, register, OTP, passkey endpoints
+│   ├── patients.js ← Patient CRUD
+│   ├── scans.js    ← Scan CRUD + upload + analyze
+│   ├── billing.js  ← Usage stats
+│   ├── tenants.js  ← Hospital management
+│   ├── users.js    ← User listing/removal
+│   └── admin.js    ← Dashboard + platform stats
+├── components/
+│   ├── ui/         ← Reusable primitives (Badge, Modal, StatsCard, etc.)
+│   ├── Sidebar.jsx ← Desktop sidebar + mobile bottom tabs + hamburger
+│   ├── Navbar.jsx  ← Top bar (used inside dashboard)
+│   ├── Footer.jsx  ← Landing page footer
+│   └── ProtectedRoute.jsx ← Auth + role guard wrapper
+├── context/
+│   └── AuthContext.jsx ← Global auth state (tokens, user, login/logout)
+├── pages/
+│   ├── Landing.jsx     ← Public marketing page
+│   ├── Auth.jsx        ← Login + Register (unified)
+│   ├── MagicLogin.jsx  ← Password reset via magic link
+│   └── dashboard/      ← All authenticated pages
+│       ├── DashboardLayout.jsx ← Sidebar + content shell
+│       ├── Overview.jsx        ← Role-aware home
+│       ├── Patients.jsx        ← Patient list + create
+│       ├── PatientDetail.jsx   ← Single patient + scans
+│       ├── Scans.jsx           ← Scan list + create + analyze
+│       ├── ScanDetail.jsx      ← Single scan + AI results
+│       ├── Roster.jsx          ← Admin: doctor management
+│       ├── TenantSettings.jsx  ← Admin: hospital config
+│       ├── Billing.jsx         ← Admin: usage bars
+│       ├── Settings.jsx        ← Account + passkey setup
+│       ├── AdminTenants.jsx    ← Superadmin: all hospitals
+│       └── AllUsers.jsx        ← Superadmin: all users
+├── App.jsx         ← Router + Toaster + AuthProvider
+├── index.css       ← CSS variables (design tokens) + base styles
+└── main.jsx        ← React root mount
+
+Responsive Strategy
+-------------------
+- Mobile (< 768px): bottom tab bar + hamburger drawer, full-width content
+- Tablet (768–1024px): sidebar visible, tighter padding
+- Desktop (> 1024px): full sidebar + spacious content area
+- All touch targets ≥ 44px
+- Safe-area-inset support for notched phones

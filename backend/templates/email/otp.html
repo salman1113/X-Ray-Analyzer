@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 500px; margin: auto; padding: 40px 20px; border: 1px solid #e2e8f0; border-radius: 12px; color: #1e293b; line-height: 1.6; }
+        .header { color: #4f46e5; margin-bottom: 24px; font-size: 24px; font-weight: bold; text-align: center; }
+        .content { margin-bottom: 30px; text-align: center; }
+        .otp-box { background-color: #f8fafc; padding: 24px; border-radius: 8px; margin: 24px 0; border: 1px dashed #cbd5e1; }
+        .otp { font-size: 42px; letter-spacing: 8px; color: #1e293b; font-weight: 800; font-family: monospace; }
+        .footer { color: #64748b; font-size: 13px; margin-top: 40px; border-top: 1px solid #f1f5f9; padding-top: 20px; }
+        .note { font-style: italic; color: #94a3b8; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">AI X-Ray Analyzer</div>
+        <div class="content">
+            <p>Hello,</p>
+            <p>To finalize your account setup and ensure your identity, please use the following one-time verification code:</p>
+            <div class="otp-box">
+                <div class="otp">{{ otp }}</div>
+                <p class="note">This code will expire in 10 minutes.</p>
+            </div>
+            <p>If you did not initiate this request, you can safely ignore this email; no changes will be made to your account.</p>
+        </div>
+        <div class="footer">
+            <p>AI X-Ray Analyzer Diagnostics Team</p>
+            <p style="font-size: 11px;">This is an automated security notification. Please do not reply directly to this email.</p>
+        </div>
+    </div>
+</body>
+</html>

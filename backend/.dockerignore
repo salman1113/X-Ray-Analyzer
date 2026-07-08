@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Python cache
+__pycache__
+*.py[cod]
+*.so
+.ruff_cache
+.mypy_cache
+.pytest_cache
+
+# Virtual environments
+.venv
+venv
+env
+
+# Local dev data (never in Docker image)
+data/
+uploads/
+
+# Model weights — downloaded at runtime from HF Hub
+routes/ai/models/*.pth
+
+# Training / migration scripts (not needed at runtime)
+scripts/
+
+# IDE
+.vscode
+.idea
+
+# Logs
+*.log

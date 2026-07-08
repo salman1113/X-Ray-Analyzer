@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Syntax check (all .py files)
+        run: |
+          cd backend
+          python -c "
+          import ast, pathlib
+          errors = []
+          for p in pathlib.Path('.').rglob('*.py'):
+              try:
+                  ast.parse(p.read_text(encoding='utf-8'), filename=str(p))
+              except SyntaxError as e:
+                  errors.append(f'{p}: {e}')
+          if errors:
+              print('Syntax errors found:')
+              for e in errors:
+                  print(f'  {e}')
+              exit(1)
+          print(f'All {len(list(pathlib.Path(\".\").rglob(\"*.py\")))} files OK')
+          "
+
+      - name: Lint with ruff
+        run: cd backend && pip install ruff && ruff check .

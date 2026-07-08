@@ -1,0 +1,85 @@
+AI X-Ray Analyzer — Authentication Flow
+
+Overview
+--------
+The app supports three auth methods:
+1. Email + Password + OTP verification (registration)
+2. Email + Password (login after verified)
+3. WebAuthn Passkey (biometric, replaces password entirely)
+
+Registration Flow
+-----------------
+1. User picks role: "Hospital Admin" or "Doctor"
+2. Hospital Admin provides: email, password, hospital_name
+   Doctor provides: email, password, invite_code
+3. POST /auth/register
+   - Hospital path: creates hospital + tenant DB + admin user + unique subdomain
+   - Doctor path: validates invite code, creates doctor user
+   - Both: generates 6-digit OTP, stores in Redis (10min TTL)
+   - Sends OTP to email via SMTP
+   - Response includes: subdomain, tenant_url (e.g. http://abc.localhost:5173)
+4. User enters OTP → POST /auth/verify-otp
+   - Validates against Redis
+   - Marks user as verified
+   - Returns access_token + refresh_token + subdomain + tenant_url
+5. Frontend redirects user to their tenant subdomain
+6. Optional: POST /auth/passkey/register/start + /verify
+   - Registers a WebAuthn credential
+   - Scrambles the password (passkey-only from now on)
+
+Login Flow (Password)
+---------------------
+1. POST /auth/login with email + password
+2. Server verifies password with bcrypt
+3. Returns access_token (15min) + refresh_token (7 days)
+
+Login Flow (Passkey)
+--------------------
+1. POST /auth/passkey/login/start with email
+   - Server generates WebAuthn challenge, stores in Redis (5min)
+   - Returns challenge options to browser
+2. Browser triggers biometric prompt (FaceID/TouchID/fingerprint)
+3. POST /auth/passkey/login/verify with credential response
+   - Server verifies against stored public key
+   - Returns access_token + refresh_token
+
+Token Structure (JWT)
+---------------------
+Access token payload:
+  {
+    "sub": "doctor@hospital.com",
+    "role": "doctor",
+    "hospital_id": "uuid-of-hospital",
+    "exp": <15 minutes from now>,
+    "type": "access"
+  }
+
+Refresh token payload:
+  {
+    "sub": "doctor@hospital.com",
+    "role": "doctor",
+    "hospital_id": "uuid-of-hospital",
+    "exp": <7 days from now>,
+    "type": "refresh"
+  }
+
+Token Refresh
+-------------
+POST /auth/refresh with { refresh_token }
+Returns new access_token + refresh_token pair.
+
+Password Reset
+--------------
+1. POST /auth/forgot-password with email + origin
+2. Server generates a magic-link token (short-lived access token)
+3. Sends email with link: {origin}/magic-login?token=<token>
+4. Frontend reads token from URL, logs user in directly
+
+Security Features
+-----------------
+- Passwords hashed with bcrypt (salt rounds auto)
+- OTP stored in Redis with 10-minute TTL
+- WebAuthn challenges stored in Redis with 5-minute TTL
+- Token blacklist in Redis (for logout/revocation)
+- Rate limiting: 60 req/min anonymous, 200 req/min per tenant
+- Audit logging: every authenticated request logged
